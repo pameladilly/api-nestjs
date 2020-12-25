@@ -1,14 +1,34 @@
-import { Controller, Get } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { JogadoresService} from './jogadores.service';
+import { CriarJogadorDto} from './dtos/criar-jogador.dto';
+import { Jogador } from './interfaces/jogador.interface';
 
 @Controller('api/v1/jogadores')
 export class JogadoresController {
+
   constructor(private readonly jogadoresService: JogadoresService) {}
 
-  @Get()
-  async getHello() {
-    return JSON.stringify( {"nome": "pamela"}
+  @Post()
+  async criarAtualizarJogador(@Body() criarJogadorDto: CriarJogadorDto) {
+    await this.jogadoresService.criarAtualizarJogador(criarJogadorDto);
+  }
 
-    );
+  @Get()
+  async consultarJogadores(@Query('email') email: string): Promise<Jogador[] | Jogador>{
+    if(email){
+      return await this.jogadoresService.consultarJogadorPeloEmail(email)
+    }else {
+      return await this.jogadoresService.consultarTodosJogadores()
+    }
+  }
+
+  @Delete()
+  async deletarJogador(@Query('email') email: string): Promise<void>{
+    try {
+      this.jogadoresService.deletarJogador(email)
+    }catch (erro){
+      throw new BadRequestException(erro)
+    }
+
   }
 }
