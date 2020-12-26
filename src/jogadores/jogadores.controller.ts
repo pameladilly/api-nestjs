@@ -24,11 +24,7 @@ export class JogadoresController {
 
   @Delete()
   async deletarJogador(@Query('email') email: string): Promise<void>{
-    try {
       this.jogadoresService.deletarJogador(email)
-    }catch (erro){
-      throw new BadRequestException(erro)
-    }
 
   }
 }
