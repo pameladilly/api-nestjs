@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { Categoria } from './interface/categoria.interface';
 import { AtualizarCategoriaDto } from './dtos/atualizar-categoria.dto';
 import { JogadoresService } from '../jogadores/jogadores.service';
+import { Jogador } from '../jogadores/interfaces/jogador.interface';
 
 @Injectable()
 export class CategoriasService {
@@ -73,4 +74,8 @@ export class CategoriasService {
   }
 
 
+  async consultarCategoriaDoJogador(jogador: Jogador): Promise<Categoria> {
+    return await this.categoriasModel.findOne({jogador}).exec()
+
+  }
 }

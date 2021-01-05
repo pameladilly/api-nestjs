@@ -34,6 +34,7 @@
     "express": "^4.17.1",
     "express-xml-bodyparser": "^0.3.0",
     "fast-xml-parser": "^3.17.5",
+    "moment-timezone": "^0.5.32",
     "mongoose": "5.10.6",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

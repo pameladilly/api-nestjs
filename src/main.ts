@@ -4,25 +4,18 @@ import bodyParser from 'body-parser';
 import { jsJsxMap } from 'ts-loader/dist/constants';
 import { options } from 'tsconfig-paths/lib/options';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import * as momentTimezone from 'moment-timezone'
 
 async function bootstrap() {
-  // var express = require('express'),
-  //   appe = express(),
-  //   http = require('http'),
-  //   server = http.createServer(appe),
-  //   xmlparser = require('express-xml-bodyparser');
 
   const app = await NestFactory.create(AppModule);
-  app.useGlobalFilters(new AllExceptionsFilter())
-  // app.use(express.json())
-  // app.use(express.urlencoded());
-  // app.use(xmlparser());
+  app.useGlobalFilters(new AllExceptionsFilter());
 
-  // app.post('/receive-xml',  function(req, res, next) {
-  //    console.log(req.body)
-  // });
-
- // server.listen(1337);
+  Date.prototype.toJSON = function(): any {
+    return momentTimezone(this)
+      .tz('America/Sao_Paulo')
+      .format('YYYY-MM-DD HH:mm:ss:SSS')
+  }
   await app.listen(8080);
 }
 bootstrap();
