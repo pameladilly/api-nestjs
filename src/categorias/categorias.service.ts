@@ -71,4 +71,6 @@ export class CategoriasService {
     await this.categoriasModel.findOneAndUpdate({categoria}, {$set: categoriaEncontrada}).exec()
 
   }
+
+
 }
