@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Desafio } from './interfaces/desafio.interface';
@@ -6,6 +6,7 @@ import { JogadoresService } from '../jogadores/jogadores.service';
 import { CriarDesafioDto } from './dto/criar-desafio.dto';
 import { CategoriasService } from '../categorias/categorias.service';
 import { DesafioStatus } from './interfaces/desafio-status.enum';
+import { AtualizarDesafioDto } from './dto/atualizar-desafio.dto';
 
 @Injectable()
 export class DesafiosService {
@@ -46,5 +47,49 @@ export class DesafiosService {
     desafioCriado.status = DesafioStatus.PENDENTE
     return await desafioCriado.save()
 
+  }
+
+  async consultarDesafiosDeUmJogador(_id: any) {
+    const jogadores = await this.jogadoresService.consultarTodosJogadores()
+
+    const jogadorFilter = jogadores.filter( jogador => jogador._id == _id)
+
+    if(jogadorFilter.length == 0){
+      throw new BadRequestException(`O id ${_id} não é um jogador!`)
+    }
+
+    return await this.desafioModel.find()
+      .where('jogadores')
+      .in(_id)
+      .populate("solicitante")
+      .populate("jogadores")
+      .populate("partida")
+      .exec()
+  }
+
+  async consultarTodosDesafios(): Promise<Array<Desafio>> {
+    return await this.desafioModel.find()
+      .populate("solicitante")
+      .populate("jogadores")
+      .populate("partida")
+      .exec()
+  }
+
+  async atualizarDesafio(_id: string, atualizarDesafioDto: AtualizarDesafioDto) {
+    const desafioEncontrado = await this.desafioModel.findById(_id).exec()
+
+    if(!desafioEncontrado){
+      throw new NotFoundException(`Desafio ${_id} não cadastrado!`)
+    }
+
+    if(atualizarDesafioDto.status){
+      desafioEncontrado.dataHoraResposta = new Date()
+    }
+
+    desafioEncontrado.status = atualizarDesafioDto.status
+    desafioEncontrado.dataHoraDesafio = atualizarDesafioDto.dataHoraDesafio
+
+    await this.desafioModel.findOneAndUpdate({_id}, {$set: desafioEncontrado}).exec()
+    
   }
 }
